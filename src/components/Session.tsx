@@ -1,9 +1,9 @@
-import { Button, Grid } from "@mui/material";
+import { Button } from "@mui/material";
 
 export default function Session(props: any) {
   const { increment, decrement, length } = props;
   return (
-    <Grid md={4}>
+    <div>
       <p id="session-label">Session</p>
       <Button onClick={decrement} id="session-decrement" variant="contained">
         -
@@ -12,6 +12,6 @@ export default function Session(props: any) {
       <Button onClick={increment} id="session-increment" variant="contained">
         +
       </Button>
-    </Grid>
+    </div>
   );
 }

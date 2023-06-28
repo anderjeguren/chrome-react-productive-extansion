@@ -1,9 +1,9 @@
-import { Button, Grid } from "@mui/material";
+import { Button } from "@mui/material";
 
 export default function Break(props: any) {
   const { increment, decrement, length } = props;
   return (
-    <Grid md={4}>
+    <div>
       <p id="break-label">Break</p>
       <Button onClick={decrement} id="break-decrement" variant="contained">
         -
@@ -12,6 +12,6 @@ export default function Break(props: any) {
       <Button variant="contained" onClick={increment} id="break-increment">
         +
       </Button>
-    </Grid>
+    </div>
   );
 }

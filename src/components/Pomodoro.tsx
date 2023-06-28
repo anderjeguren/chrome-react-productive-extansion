@@ -1,4 +1,4 @@
-import { Button, Grid } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import Break from "./Break";
 import Session from "./Session";
@@ -23,7 +23,6 @@ export default function Pomodoro() {
 
   useEffect(() => {
     let interval: any = null;
-
     if (isActive && timeLeft > 1) {
       setTimeLeft(
         mode === "session"
@@ -32,13 +31,17 @@ export default function Pomodoro() {
       );
 
       interval = setInterval(() => {
-        setTimeSpent((timeSpent) => timeSpent + 1000);
+        chrome.runtime.sendMessage("getTime", {timeLeft: timeLeft}).then(function (value) {
+          const timeSpent = value * 1000;
+          setTimeSpent(timeSpent + 1000);
+        });
       }, 1000);
+      chrome.runtime.sendMessage("startTimer");
     } else {
       clearInterval(interval);
     }
     if (timeLeft === 0) {
-      beep.play();
+      //beep.play();
       setBeepPlaying(true);
       setTimeSpent(0);
       setMode((mode) => (mode === "session" ? "break" : "session"));
@@ -103,7 +106,7 @@ export default function Pomodoro() {
   }
 
   return (
-    <Grid container spacing={2}>
+    <Container maxWidth="md">
       <h1>Pomodoro Clock</h1>
 
       <Timer time={timeLeft} mode={mode} />
@@ -115,7 +118,7 @@ export default function Pomodoro() {
           Reset
         </Button>
       </div>
-      <Grid container spacing={2}>
+      <Container maxWidth="md">
         <Break
           length={breakLength}
           decrement={decrementBreakLength}
@@ -126,7 +129,7 @@ export default function Pomodoro() {
           decrement={decrementSessionLength}
           increment={incrementSessionLength}
         />
-      </Grid>
-    </Grid>
+      </Container>
+    </Container>
   );
 }
