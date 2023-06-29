@@ -1,31 +1,27 @@
 /* eslint-disable no-undef */
-// Alarms launches every second
-chrome.alarms.create({
-  periodInMinutes: 1 / 60,
-});
-
 chrome.alarms.onAlarm.addListener(() => {
-  chrome.storage.local.get(["seconds"]).then((res) => {
-    const seconds = res.seconds ?? 0;
-    const now = new Date();
-
-    chrome.storage.local.set({ seconds: seconds - 1 });
-
+  chrome.storage.session.get(["minutes", "seconds"]).then((res) => {
+    if (res.minutes === 0 && res.seconds === 0) {
+      chrome.alarms.clearAll();
+    } else if (res.seconds === 0) {
+      chrome.storage.session.set({ minutes: res.minutes - 1, seconds: 59 });
+    } else {
+      chrome.storage.session.set({ seconds: res.seconds - 1 });
+    }
     chrome.action.setBadgeText({
-      text: `${now.getHours() + ":" + now.getMinutes()}`,
+      text: `${res.minutes}:${('00'+res.seconds).slice(-2)}`,
     });
   });
 });
 
-chrome.runtime.onMessage.addListener((message, request, sendResponse) => {
-  if (message === 'startTimer') {
+chrome.runtime.onMessage.addListener((request, sendResponse) => {
+  if (request.type === 'startTimer') {
     // Create an alarm so we have something to look at in the demo
-    chrome.storage.local.set({ seconds: request.timeLeft });
-  } else if (message === 'getTime') {
-    chrome.storage.local.get(["seconds"]).then((res) => {
-      sendResponse(res.seconds);
+    chrome.storage.session.set({ minutes: request.minutes, seconds: request.seconds });
+    chrome.alarms.create({
+      periodInMinutes: 1 / 60,
     });
-  } else if (message === 'goodbye') {
+  } else if (request.type === 'goodbye') {
     chrome.runtime.Port.disconnect();
   }
 });

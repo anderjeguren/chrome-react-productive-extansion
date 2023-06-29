@@ -5,8 +5,8 @@ import Session from "./Session";
 import Timer from "./Timer";
 
 export default function Pomodoro() {
-  const [breakLength, setBreakLength] = useState(5 * 60);
-  const [sessionLength, setSessionLength] = useState(25 * 60);
+  const [breakLength, setBreakLength] = useState(5);
+  const [sessionLength, setSessionLength] = useState(25);
   const [mode, setMode] = useState("session");
   const [timeLeft, setTimeLeft] = useState(0);
   const [isActive, setIsActive] = useState(false);
@@ -29,14 +29,6 @@ export default function Pomodoro() {
           ? sessionLength * 1000 - timeSpent
           : breakLength * 1000 - timeSpent
       );
-
-      interval = setInterval(() => {
-        chrome.runtime.sendMessage("getTime", {timeLeft: timeLeft}).then(function (value) {
-          const timeSpent = value * 1000;
-          setTimeSpent(timeSpent + 1000);
-        });
-      }, 1000);
-      chrome.runtime.sendMessage("startTimer");
     } else {
       clearInterval(interval);
     }
@@ -61,32 +53,24 @@ export default function Pomodoro() {
 
   /* ########## FUNCTIONS ########## */
   function decrementBreakLength() {
-    const decreasedBreakLength = breakLength - 60 > 60 ? breakLength - 60 : 60;
-    setBreakLength(decreasedBreakLength);
+    setBreakLength(breakLength - 1);
   }
 
   function incrementBreakLength() {
-    const incrementedBreakLength =
-      breakLength + 60 <= 60 * 60 ? breakLength + 60 : 60 * 60;
-    setBreakLength(incrementedBreakLength);
+    setBreakLength(breakLength + 1);
   }
 
   function decrementSessionLength() {
-    const decreasedSessionLength =
-      sessionLength - 60 > 60 ? sessionLength - 60 : 60;
-
-    setSessionLength(decreasedSessionLength);
+    setSessionLength(sessionLength - 1);
   }
 
   function incrementSessionLength() {
-    const incrementedSessionLength =
-      sessionLength + 60 <= 60 * 60 ? sessionLength + 60 : 60;
-    setSessionLength(incrementedSessionLength);
+    setSessionLength(sessionLength + 1);
   }
 
   function reset() {
-    setBreakLength(5 * 60);
-    setSessionLength(25 * 60);
+    setBreakLength(5);
+    setSessionLength(25);
     setTimeLeft(mode === "session" ? sessionLength * 1000 : breakLength * 1000);
 
     if (isActive) {
@@ -102,6 +86,7 @@ export default function Pomodoro() {
   }
 
   function toggleIsActive() {
+    chrome.runtime.sendMessage({ type: "startTimer", minutes: sessionLength, seconds: 59 });
     setIsActive(!isActive);
   }
 

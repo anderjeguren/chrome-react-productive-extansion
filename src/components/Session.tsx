@@ -8,7 +8,7 @@ export default function Session(props: any) {
       <Button onClick={decrement} id="session-decrement" variant="contained">
         -
       </Button>
-      <span id="session-length">{length / 60}</span>
+      <span id="session-length">{length}</span>
       <Button onClick={increment} id="session-increment" variant="contained">
         +
       </Button>

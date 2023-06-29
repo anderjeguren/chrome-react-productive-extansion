@@ -8,7 +8,7 @@ export default function Break(props: any) {
       <Button onClick={decrement} id="break-decrement" variant="contained">
         -
       </Button>
-      <span id="break-length">{length / 60}</span>
+      <span id="break-length">{length}</span>
       <Button variant="contained" onClick={increment} id="break-increment">
         +
       </Button>
